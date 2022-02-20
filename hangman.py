@@ -19,10 +19,11 @@ class Game:
     def __init__(self):
         self.welcome()
         self.turn_count = 0                                     #Turn_count counts the amount of times the player has guessed
+        self.incorrect_guesses = 0                              #Counts the total amount of incorrect guesses
         self.guessed_list = []                                  #A list of all the characters the played has guessed
         self.word = self.random_word(filtered_list)             #Calls the random_word method to select a word from the filtered list
         self.letter_list = list(self.word)                      #Splits the selected word into a list which contains each letter of the word
-        self.guess_limit = len(self.word)                       #Sets the maximum amount of guesses the user has to correctly guess each letter
+        self.incorrect_guess_limit = len(self.word)             #Sets the maximum amount of guesses the user has to correctly guess each letter
         self.underscore_word = ["_"] * len(self.letter_list)    #Creates a list of underscores to be filled in as the player correctly guesses letters
 
         print(f"Your random word has been chosen, it has {len(self.word)} letters")
@@ -50,7 +51,6 @@ class Game:
             #isalpha() checks if every character is a letter from the alphabet
             if user_input.isalpha() and len(user_input)==1 and user_input not in self.guessed_list:
                 self.guessed_list.append(user_input)    #Adds the inputted letter to the guessed letter list
-                print(self.guessed_list)
                 self.compare_letter(user_input)         #Compares the inputted letter to the randomly chosen word
                 break                                   #Breaks the loop once a valid letter has been chosen and compared to the word
 
@@ -64,19 +64,32 @@ class Game:
         if letter in self.letter_list:
             self.replace_underscore(letter)
         else:
-            print(f"Incorrect guess: {letter} is not a letter in the word")
+            self.incorrect_guesses += 1
+            print("")
+            print(f"Incorrect guess: {letter} is not a letter in the selected word")
+            print("")
+            print("")
+            print("Guessed letters so far: " + " ".join(self.guessed_list))
+            print("")
 
     def replace_underscore(self, letter):
         index_list = [i for i, index in enumerate(self.letter_list) if index == letter]
         for index_value in index_list:
             self.underscore_word[index_value] = letter
 
+        print("")
+        print("")
         print(' '.join(self.underscore_word))
+        print("")
+        print("Guessed letters so far: " + " ".join(self.guessed_list))
+        print("")
     
     def turn(self):
-        self.turn_count += 1
-        print(f"Turn {self.turn_count}: Guess one letter of the word.")
-        print(f"You have {self.guess_limit} remaining incorrect guesses.")
-        self.guess_letter()
+        while self.incorrect_guesses < self.incorrect_guess_limit:
+            self.turn_count += 1
+            self.remaining_incorrect_guesses = (self.incorrect_guess_limit - self.incorrect_guesses)
+            print(f"Turn {self.turn_count}: Guess one letter of the word.")
+            print(f"You have {self.remaining_incorrect_guesses} remaining incorrect guesses.")
+            self.guess_letter()
 
 Game()
