@@ -1,4 +1,5 @@
 #imports random module to randomly select a word from the word_list file
+import enum
 import random
 
 with open('word_list.txt') as wordlist_file:
@@ -42,27 +43,40 @@ class Game:
     
     def guess_letter(self):
         while True:
-            user_input = input()                        #Records the user's input
-            user_input = user_input.lower()             #Converts the user input to lower case to avoid case sensitivity
+            user_input = input()                                #Records the user's input
+            user_input = user_input.lower()                     #Converts the user input to lower case to avoid case sensitivity
 
             #A valid input must be a single letter that has not already been guessed
             #isalpha() checks if every character is a letter from the alphabet
             if user_input.isalpha() and len(user_input)==1 and user_input not in self.guessed_list:
                 self.guessed_list.append(user_input)    #Adds the inputted letter to the guessed letter list
                 print(self.guessed_list)
-                break
+                self.compare_letter(user_input)         #Compares the inputted letter to the randomly chosen word
+                break                                   #Breaks the loop once a valid letter has been chosen and compared to the word
 
             elif user_input.isalpha() and len(user_input)==1 :
                 print(f"You already guessed {user_input}. Please try again.")
 
             else:
                 print("Invalid input. Please input a single letter.")
+
+    def compare_letter(self, letter):
+        if letter in self.letter_list:
+            self.replace_underscore(letter)
+        else:
+            print(f"Incorrect guess: {letter} is not a letter in the word")
+
+    def replace_underscore(self, letter):
+        index_list = [i for i, index in enumerate(self.letter_list) if index == letter]
+        for index_value in index_list:
+            self.underscore_word[index_value] = letter
+
+        print(' '.join(self.underscore_word))
     
     def turn(self):
         self.turn_count += 1
         print(f"Turn {self.turn_count}: Guess one letter of the word.")
         print(f"You have {self.guess_limit} remaining incorrect guesses.")
         self.guess_letter()
-        print(' '.join(self.underscore_word))
 
 Game()
