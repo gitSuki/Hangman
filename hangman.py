@@ -1,5 +1,4 @@
 #imports random module to randomly select a word from the word_list file
-import enum
 import random
 
 with open('word_list.txt') as wordlist_file:
@@ -18,6 +17,7 @@ with open('word_list.txt') as wordlist_file:
 class Game:
     def __init__(self):
         self.welcome()
+        self.victory = False
         self.turn_count = 0                                     #Turn_count counts the amount of times the player has guessed
         self.incorrect_guesses = 0                              #Counts the total amount of incorrect guesses
         self.guessed_list = []                                  #A list of all the characters the played has guessed
@@ -66,32 +66,44 @@ class Game:
         else:
             self.incorrect_guesses += 1
             print("")
-            print("")
             print(f"Incorrect guess: {letter} is not a letter in the selected word")
-            print("")
-            print("Guessed letters so far: " + " ".join(self.guessed_list))
-            print("")
+
+            self.print_progress()
 
     def replace_underscore(self, letter):
         index_list = [i for i, index in enumerate(self.letter_list) if index == letter]
         for index_value in index_list:
             self.underscore_word[index_value] = letter
 
+        self.print_progress()
+
+    def print_progress(self):
         print("")
-        print("")
-        print(' '.join(self.underscore_word))
         print("")
         print("Guessed letters so far: " + " ".join(self.guessed_list))
+        print(' '.join(self.underscore_word))
         print("")
+
+    def check_victory(self):
+        if self.letter_list == self.underscore_word:
+            self.victory = True
     
     def turn(self):
-        while self.incorrect_guesses < self.incorrect_guess_limit:
+        while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory:
             self.turn_count += 1
             self.remaining_incorrect_guesses = (self.incorrect_guess_limit - self.incorrect_guesses)
             print(f"Turn {self.turn_count}: Guess one letter of the word.")
             print(f"You have {self.remaining_incorrect_guesses} remaining incorrect guesses.")
             self.guess_letter()
+            self.check_victory()
         
-        print("Game over!")
+        if (self.victory):
+            print("")
+            print("Congratulations! You won!")
+        else:
+            print("")
+            print("You lost!")
+            print("")
+            print("The word was " + self.word)
 
 Game()
