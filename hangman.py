@@ -1,7 +1,11 @@
-#imports random module to randomly select a word from the word_list file
-import random
+import random                                               #imports random module to randomly select a word from the word_list file
+import json                                                 #imports json module to work with save data
+from pathlib import Path 
 
-with open('word_list.txt') as wordlist_file:
+wordlist = Path(__file__).with_name('word_list.txt')
+savegame = Path(__file__).with_name('save_game.json')
+
+with wordlist.open('r') as wordlist_file:
     #Opens the word_list.txt file and turns each line into an entry in a list
     word_list = wordlist_file.readlines()
 
@@ -19,6 +23,7 @@ class Game:
     def __init__(self):
         self.welcome()
         self.victory = False                                    #Determines if the user has guessed the correct word
+        self.exit = False
         self.word = self.random_word(filtered_list)             #Calls the random_word method to select a word from the filtered list
         self.letter_list = list(self.word)                      #Splits the selected word into a list which contains each letter of the word
         self.underscore_word = ["_"] * len(self.letter_list)    #List of underscores to be filled in as the player correctly guesses letters
@@ -39,6 +44,8 @@ class Game:
         print("Welcome to Hangman!")
         print("")
         print("A random word of 5-12 words will be chosen. On each turn you can guess one letter from the word. To win you must correctly guess every letter before running out of turns!")
+        print("You can input \'save\' at any time to save your progress or \'exit\' to leave the game.")
+        print("")
         print("")
 
 
@@ -61,6 +68,16 @@ class Game:
                 self.compare_letter(user_input)         #Compares the inputted letter to the randomly chosen word
                 break                                   #Breaks the loop once a valid letter has been chosen and compared to the word
 
+            elif user_input == "save":
+                self.save_progress()
+                self.exit = True
+                break
+
+            elif user_input == "exit":
+                self.save_progress()
+                self.exit = True
+                break
+            
             elif user_input.isalpha() and len(user_input)==1 :
                 print(f"You already guessed {user_input}. Please try again.")
 
@@ -100,6 +117,9 @@ class Game:
         print(' '.join(self.underscore_word))
         print("")
 
+    def save_progress(self):
+        with savegame.open("w") as savegame_file:
+            savegame_file.write(self.word)
 
     def check_victory(self):
         #Compares the underscore_word list (that is having it's values be replaced by the user's correct guesses) with the original letter_list (which is the randomly selected word split into a list)
@@ -114,10 +134,11 @@ class Game:
             print("Congratulations! You won!")
         else:
             print("")
-            print("The word you were trying to guess was: " + self.word.under())
+            print("The word you were trying to guess was: " + self.word)
     
+
     def turn(self):
-        while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory:
+        while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory and not self.exit:
             self.turn_count += 1
             self.remaining_incorrect_guesses = (self.incorrect_guess_limit - self.incorrect_guesses)
             print(f"Turn {self.turn_count}: Guess one letter of the word.")
