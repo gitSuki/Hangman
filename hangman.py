@@ -66,8 +66,8 @@ class Game:
         else:
             self.incorrect_guesses += 1
             print("")
-            print(f"Incorrect guess: {letter} is not a letter in the selected word")
             print("")
+            print(f"Incorrect guess: {letter} is not a letter in the selected word")
             print("")
             print("Guessed letters so far: " + " ".join(self.guessed_list))
             print("")
@@ -91,5 +91,7 @@ class Game:
             print(f"Turn {self.turn_count}: Guess one letter of the word.")
             print(f"You have {self.remaining_incorrect_guesses} remaining incorrect guesses.")
             self.guess_letter()
+        
+        print("Game over!")
 
 Game()
