@@ -69,6 +69,7 @@ class Game:
 
 
     def compare_letter(self, letter):
+        #Function that compares and checks if a letter parameter matches with any letters in the randomly selected word
         if letter in self.letter_list:
             self.replace_underscore(letter)
 
@@ -81,7 +82,10 @@ class Game:
 
 
     def replace_underscore(self, letter):
+        #Function that replaces the blank underscores in underscore_word with letters that were correctly guessed by the user at their proper index
         index_list = [i for i, index in enumerate(self.letter_list) if index == letter]
+
+        #Loops through the index values calculated by the enumerator and replaces the underscores at those specific indexes
         for index_value in index_list:
             self.underscore_word[index_value] = letter
 
@@ -89,6 +93,7 @@ class Game:
 
 
     def print_progress(self):
+        #Prints the progress the user has made so far in terms of correct and incorrect guesses
         print("")
         print("")
         print("Incorrect letters gussed so far: " + " ".join(self.incorrect_guess_list))
@@ -97,10 +102,20 @@ class Game:
 
 
     def check_victory(self):
+        #Compares the underscore_word list (that is having it's values be replaced by the user's correct guesses) with the original letter_list (which is the randomly selected word split into a list)
         if self.letter_list == self.underscore_word:
             self.victory = True
+   
 
-
+    def game_over(self):
+        #Presents the user with a victory or defeat message
+        if (self.victory):
+            print("")
+            print("Congratulations! You won!")
+        else:
+            print("")
+            print("The word you were trying to guess was: " + self.word.under())
+    
     def turn(self):
         while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory:
             self.turn_count += 1
@@ -110,11 +125,6 @@ class Game:
             self.guess_letter()
             self.check_victory()
         
-        if (self.victory):
-            print("")
-            print("Congratulations! You won!")
-        else:
-            print("")
-            print("The word you were trying to guess was: " + self.word.under())
+        self.game_over()
 
 Game()
