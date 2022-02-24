@@ -118,8 +118,20 @@ class Game:
         print("")
 
     def save_progress(self):
+        #Opens the save_game.json file 
         with savegame.open("w") as savegame_file:
-            savegame_file.write(self.word)
+            #Turning all the data into a dictionary for easy json conversion
+            save_data = {
+                "turn": self.turn_count,
+                "word": self.word,
+                "word_progress": self.underscore_word,
+                "guessed_letters": self.guessed_list,
+                "incorrect_letters": self.incorrect_guess_list,
+                "incorrect_guesses": self.incorrect_guesses
+                }
+            
+            #Converting the dictionary to json and writing it to the save_game.json file
+            savegame_file.write(json.dumps(save_data, indent=4))
 
     def check_victory(self):
         #Compares the underscore_word list (that is having it's values be replaced by the user's correct guesses) with the original letter_list (which is the randomly selected word split into a list)
