@@ -1,6 +1,7 @@
 import random                                               #imports random module to randomly select a word from the word_list file
 import json                                                 #imports json module to work with save data
-from pathlib import Path 
+from pathlib import Path
+from termcolor import colored
 
 wordlist = Path(__file__).with_name('word_list.txt')
 savegame = Path(__file__).with_name('save_game.json')
@@ -33,6 +34,9 @@ class Game:
         self.incorrect_guess_list = []                          #A list of all incorrect letters the player has guessed
         self.incorrect_guesses = 0                              #Counts the total amount of incorrect guesses
         self.incorrect_guess_limit = None                       #Sets the maximum amount of guesses the user has
+
+        self.one = colored('[1]', 'cyan')
+        self.two = colored('[2]', 'cyan')
         self.welcome()
 
 
@@ -42,8 +46,8 @@ class Game:
         print("A random word of 5-12 words will be chosen. On each turn you can guess one letter from the word. To win you must correctly guess every letter before running out of turns!")
         print("You can input \'save\' at any time to save your progress or \'exit\' to leave the game.")
         print("")
-        print("[1] Play a new game")
-        print("[2] Load a saved game")
+        print(self.one + " Play a new game")
+        print(self.two + " Load a saved game")
         print("")
 
         while True:
@@ -56,7 +60,7 @@ class Game:
                 self.incorrect_guess_limit = len(self.word)
 
                 print("")
-                print(f"Your random word has been chosen, it has {len(self.word)} letters")
+                print(colored(f"Your random word has been chosen, it has {len(self.word)} letters", "cyan"))
                 print("")
                 print("")
                 self.turn()
@@ -136,8 +140,8 @@ class Game:
         #Prints the progress the user has made so far in terms of correct and incorrect guesses
         print("")
         print("")
-        print("Incorrect letters gussed so far: " + " ".join(self.incorrect_guess_list))
-        print(' '.join(self.underscore_word))
+        print("Incorrect letters gussed so far: " + colored(" ".join(self.incorrect_guess_list), "red"))
+        print(colored(' '.join(self.underscore_word), 'cyan'))
         print("")
 
     def save_progress(self):
@@ -195,8 +199,8 @@ class Game:
         print("")
         print("Would you like to play again?")
         print("")
-        print("[1] Yes")
-        print("[2] No")
+        print(self.one + " Yes")
+        print(self.two + " No")
         print("")
 
         #Loops continuously until the player either enters 1 or 2
@@ -219,8 +223,13 @@ class Game:
         while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory and not self.exit:
             self.turn_count += 1
             self.remaining_incorrect_guesses = (self.incorrect_guess_limit - self.incorrect_guesses)
+
+            if (self.remaining_incorrect_guesses > 3):
+                print(f"You have {self.remaining_incorrect_guesses} remaining incorrect guesses.")
+            else:
+                print(colored(f"Think carefully! You have {self.remaining_incorrect_guesses} remaining incorrect guesses.", "red"))
+
             print(f"Turn {self.turn_count}: Guess one letter of the word.")
-            print(f"You have {self.remaining_incorrect_guesses} remaining incorrect guesses.")
             self.guess_letter()
             self.check_victory()
         
