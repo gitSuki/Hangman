@@ -133,6 +133,7 @@ class Game:
             #Converting the dictionary to json and writing it to the save_game.json file
             savegame_file.write(json.dumps(save_data, indent=4))
 
+
     def check_victory(self):
         #Compares the underscore_word list (that is having it's values be replaced by the user's correct guesses) with the original letter_list (which is the randomly selected word split into a list)
         if self.letter_list == self.underscore_word:
@@ -147,7 +148,33 @@ class Game:
         else:
             print("")
             print("The word you were trying to guess was: " + self.word)
+        
+        self.continue_game()
+
     
+    def continue_game(self):
+        #Prompts the user if they'd like to continue playing or end the game
+        print("")
+        print("Would you like to play again?")
+        print("")
+        print("[1] yes")
+        print("[2] no")
+
+        #Loops continuously until the player either enters 1 or 2
+        while True:
+            user_input = input()                                #Records the user's input
+
+            if (user_input == "1"):
+                print("")                                       #Blank line for formatting
+                Game()                                          #Launches a new game
+                break                                           #Ends the loop and terminates the current game
+
+            elif (user_input == "2"):
+                break                                           #Ends the loop and terminates the current game
+
+            else:
+                print("Invalid input, please try again")
+
 
     def turn(self):
         while self.incorrect_guesses < self.incorrect_guess_limit and not self.victory and not self.exit:
