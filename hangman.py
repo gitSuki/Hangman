@@ -5,6 +5,7 @@ from pathlib import Path
 wordlist = Path(__file__).with_name('word_list.txt')
 savegame = Path(__file__).with_name('save_game.json')
 
+
 with wordlist.open('r') as wordlist_file:
     #Opens the word_list.txt file and turns each line into an entry in a list
     word_list = wordlist_file.readlines()
@@ -21,23 +22,18 @@ with wordlist.open('r') as wordlist_file:
 
 class Game:
     def __init__(self):
-        self.welcome()
         self.victory = False                                    #Determines if the user has guessed the correct word
-        self.exit = False
-        self.word = self.random_word(filtered_list)             #Calls the random_word method to select a word from the filtered list
-        self.letter_list = list(self.word)                      #Splits the selected word into a list which contains each letter of the word
-        self.underscore_word = ["_"] * len(self.letter_list)    #List of underscores to be filled in as the player correctly guesses letters
+        self.exit = False                                       #Determines if the user has decided to exit or save the game
+        self.word = None                                        #Initializes the word that the player has to guess
+        self.letter_list = None                                 #Splits the selected word into a list which contains each letter of the word
+        self.underscore_word = None                             #A List of underscores to be filled in as the player correctly guesses letters
 
         self.turn_count = 0                                     #Counts the amount of times the player has guessed
         self.guessed_list = []                                  #A list of all letters the player has guessed
         self.incorrect_guess_list = []                          #A list of all incorrect letters the player has guessed
         self.incorrect_guesses = 0                              #Counts the total amount of incorrect guesses
-        self.incorrect_guess_limit = len(self.word)             #Sets the maximum amount of guesses the user has
-
-        print(f"Your random word has been chosen, it has {len(self.word)} letters")
-        print("")
-        print("")
-        self.turn()
+        self.incorrect_guess_limit = None                       #Sets the maximum amount of guesses the user has
+        self.welcome()
 
 
     def welcome(self):
@@ -46,7 +42,34 @@ class Game:
         print("A random word of 5-12 words will be chosen. On each turn you can guess one letter from the word. To win you must correctly guess every letter before running out of turns!")
         print("You can input \'save\' at any time to save your progress or \'exit\' to leave the game.")
         print("")
+        print("[1] Play a new game")
+        print("[2] Load a saved game")
         print("")
+
+        while True:
+            user_input = input()                                #Records the user's input
+
+            if (user_input == "1"):
+                self.word = self.random_word(filtered_list)     #Calls the random_word method to select a word from the filtered list
+                self.letter_list = list(self.word)
+                self.underscore_word = ["_"] * len(self.letter_list)
+                self.incorrect_guess_limit = len(self.word)
+
+                print("")
+                print(f"Your random word has been chosen, it has {len(self.word)} letters")
+                print("")
+                print("")
+                self.turn()
+                break                                           #Ends the loop and continues with a new game
+
+            elif (user_input == "2"):
+                self.load_progress()
+                self.print_progress()
+                self.turn()
+                break                                           #Ends the loop and continues the game from an existing savefile
+
+            else:
+                print("Invalid input, please try again")
 
 
     def random_word(self, arg_list):
@@ -133,6 +156,21 @@ class Game:
             #Converting the dictionary to json and writing it to the save_game.json file
             savegame_file.write(json.dumps(save_data, indent=4))
 
+    
+    def load_progress(self):
+        #Loads the save_game.json file
+        with savegame.open("r") as savegame_file:
+            save_data = json.load(savegame_file)
+
+            self.turn_count = save_data['turn']
+            self.word = save_data['word']
+            self.letter_list = list(self.word)
+            self.underscore_word = save_data['word_progress']
+            self.guessed_list = save_data['guessed_letters']
+            self.incorrect_guess_list = save_data['incorrect_letters']
+            self.incorrect_guesses = save_data['incorrect_guesses']
+            self.incorrect_guess_limit = len(self.word)
+
 
     def check_victory(self):
         #Compares the underscore_word list (that is having it's values be replaced by the user's correct guesses) with the original letter_list (which is the randomly selected word split into a list)
@@ -157,8 +195,9 @@ class Game:
         print("")
         print("Would you like to play again?")
         print("")
-        print("[1] yes")
-        print("[2] no")
+        print("[1] Yes")
+        print("[2] No")
+        print("")
 
         #Loops continuously until the player either enters 1 or 2
         while True:
