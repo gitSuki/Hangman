@@ -9,7 +9,7 @@ A simple Hangman game for the console, written with savegame functionality.
 
 ## Preview
 
-![image](https://user-images.githubusercontent.com/96004796/156298316-8ef19cc3-6941-4b1d-b34a-a26cf81dec32.png)
+![firefox_yGWvpvhAjw](https://user-images.githubusercontent.com/96004796/156301675-fdbb4429-780c-4c50-ad40-bf2d6a8e20f1.gif)
 
 .json save file:
 
